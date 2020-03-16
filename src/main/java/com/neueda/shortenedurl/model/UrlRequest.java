@@ -1,7 +1,5 @@
 package com.neueda.shortenedurl.model;
 
-import static com.neueda.shortenedurl.util.Constants.MAX_LONG_URL_SIZE;
-
 import java.io.Serializable;
 
 import javax.validation.constraints.NotEmpty;
@@ -19,7 +17,6 @@ public class UrlRequest implements Serializable {
 	@NotNull
 	@NotEmpty
 	@URL
-	@Length(max = MAX_LONG_URL_SIZE)
 	private String longUrl;
 
 	public UrlRequest() {

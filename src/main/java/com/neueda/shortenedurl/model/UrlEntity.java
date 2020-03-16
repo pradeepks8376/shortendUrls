@@ -13,19 +13,16 @@ import javax.persistence.OneToMany;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 
-import com.neueda.shortenedurl.util.Constants;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 @Entity
-public class Url implements Serializable {
+public class UrlEntity implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@Column(length = Constants.URL_CODE_SIZE)
 	private String code;
-	
-	@Column(length = Constants.MAX_LONG_URL_SIZE)  
+
 	private String longUrl;
 	
 	@CreationTimestamp
@@ -35,13 +32,13 @@ public class Url implements Serializable {
 	private Date updatedAt;
 	
 	@OneToMany(cascade=CascadeType.ALL, mappedBy="url")
-	private List<Statistic> statistics = new ArrayList<>();
+	private List<StatisticEntity> statistics = new ArrayList<>();
 		
-	public Url() {
+	public UrlEntity() {
 		
 	}
 	
-	public Url(String code, String longUrl) {
+	public UrlEntity(String code, String longUrl) {
 		super();
 		this.code = code;
 		this.longUrl = longUrl;
@@ -90,11 +87,11 @@ public class Url implements Serializable {
 		this.updatedAt = updatedAt;
 	}	
 
-	public List<Statistic> getStatistics() {
+	public List<StatisticEntity> getStatistics() {
 		return statistics;
 	}
 
-	public void setStatistics(List<Statistic> statistics) {
+	public void setStatistics(List<StatisticEntity> statistics) {
 		this.statistics = statistics;
 	}
 
@@ -118,7 +115,7 @@ public class Url implements Serializable {
 		if (getClass() != obj.getClass()) {
 			return false;
 		}
-		Url other = (Url) obj;
+		UrlEntity other = (UrlEntity) obj;
 		if (code == null) {
 			if (other.code != null) {
 				return false;

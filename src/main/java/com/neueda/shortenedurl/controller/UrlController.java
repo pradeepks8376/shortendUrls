@@ -1,90 +1,62 @@
-package com.neueda.shortenedurl.resources;
+package com.neueda.shortenedurl.controller;
 
 import java.net.URI;
-import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
-import javax.validation.Valid;
-
-import com.neueda.shortenedurl.model.UrlRequest;
+import javax.servlet.http.HttpServletRequest;
+import com.neueda.shortenedurl.model.StatisticEntity;
+import com.neueda.shortenedurl.model.UrlEntity;
 import com.neueda.shortenedurl.services.StatisticService;
 import com.neueda.shortenedurl.services.UrlService;
-import com.neueda.shortenedurl.util.Constants;
-import com.neueda.shortenedurl.vo.Statistic;
-import com.neueda.shortenedurl.vo.Url;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 @RestController
 @RequestMapping(value = "/url")
 public class UrlController {
-	Logger logger = LoggerFactory.getLogger(UrlResources.class);
+    Logger logger = LoggerFactory.getLogger(UrlController.class);
 
-	@Autowired
-	private UrlService service;
+    private static Pattern URL = Pattern.compile("https?://[^\\s]+");
+    @Autowired
+    private UrlService service;
 
-	@Autowired
-	private StatisticService statisticService;
+    @Autowired
+    private StatisticService statisticService;
 
-	@PostMapping(value = "/shortener")
-	public ResponseEntity<Url> findOrCreate(@Valid @RequestBody UrlRequest request) {
-		logger.info("Received url to shorten: " + request.getLongUrl());
+    @PostMapping(value = "/shortener")
+    public void create(@RequestParam("url") String url) throws Exception {
+        logger.info("Received url to shorten: " + url);
+        if (!URL.matcher(url).matches()) {
+            ResponseEntity.badRequest().body("invalid url");
+        }
+        String code = service.save(url);
+        //need to check this /code
+        URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{code}").buildAndExpand(code).toUri();
+        ResponseEntity.created(uri).build();
+    }
 
-		Url url = service.fromDTO(request);
-		url = service.findOrCreate(url);
+    @GetMapping(path = "/{code}")
+    public ResponseEntity<UrlEntity> findAndRedirect(@PathVariable String code,
+                                               @RequestHeader Map<String, String> headersMap, HttpServletRequest request) {
+        logger.info("Redirecting code to URL ", code);
 
-		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{code}").buildAndExpand(url.getCode())
-				.toUri();
+        UrlEntity url = service.find(code);
 
-		return ResponseEntity.created(uri).build();
-	}
+        String user = request.getUserPrincipal().getName();
+        String userDetails = statisticService.getUserAgent(request);
+        System.out.println("print user " + user + " $$userdetails " + userDetails);
+		StatisticEntity urlstats = statisticService.buildUrlStatistics(user, userDetails, url);
+        statisticService.create(urlstats);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setLocation(URI.create(url.getLongUrl()));
 
-	@GetMapping(path = "/{code}")
-	public ResponseEntity<Url> findAndRedirect(@PathVariable String code,
-			@RequestHeader Map<String, String> headersMap) {
-
-		code = code.replaceAll(Constants.PATTERN_BREAKING_CHARACTERS, "_");
-
-		logger.info(Constants.FINDING_URL_FOR_REDIRECTING, code);
-
-		Url url = service.find(code);
-
-		Statistic statistic = statisticService.mapFrom(headersMap, url);
-		statisticService.create(statistic);
-
-		HttpHeaders headers = new HttpHeaders();
-		headers.setLocation(URI.create(url.getLongUrl()));
-
-		return new ResponseEntity<Url>(headers, HttpStatus.MOVED_PERMANENTLY);
-	}
-
-	@GetMapping(path = "/{code}/longUrl")
-	public ResponseEntity<Url> find(@PathVariable String code) {
-
-		code = code.replaceAll(Constants.PATTERN_BREAKING_CHARACTERS, "_");
-
-		logger.info(Constants.FINDING_LONG_URL, code);
-
-		ResponseEntity<Url> responseEntity;
-
-		Url url = service.find(code);
-		responseEntity = ResponseEntity.ok().body(url);
-
-		return responseEntity;
-	}
-
+        return new ResponseEntity<UrlEntity>(headers, HttpStatus.OK);
+    }
 }
