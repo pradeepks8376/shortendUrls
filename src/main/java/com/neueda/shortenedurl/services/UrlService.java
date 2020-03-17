@@ -29,7 +29,7 @@ public class UrlService {
 		int startIndex = 0;
 		int endIndex = startIndex + Constants.URL_CODE_SIZE - 1;
 		String code = UrlUtils.generateShortURL(longUrl, startIndex, endIndex);
-
+		repository.save(new UrlEntity(code, longUrl));
 		return code;
 	}
 
