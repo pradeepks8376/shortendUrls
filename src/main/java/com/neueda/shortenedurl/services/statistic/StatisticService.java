@@ -1,6 +1,6 @@
-package com.neueda.shortenedurl.services;
+package com.neueda.shortenedurl.services.statistic;
 
-import com.neueda.shortenedurl.dao.StatisticRepository;
+import com.neueda.shortenedurl.dao.statistic.StatisticRepository;
 import com.neueda.shortenedurl.model.StatisticEntity;
 import com.neueda.shortenedurl.model.UrlEntity;
 import com.neueda.shortenedurl.model.UrlStatisticsResponse;
@@ -34,12 +34,11 @@ public class StatisticService {
         UrlStatisticsResponse urlStatsResponse = new UrlStatisticsResponse();
         urlStatsResponse.setNumberOfHits(repository.getNumberOfHits());
         urlStatsResponse.setUserDetails(repository.getUserName());
-        urlStatsResponse.setUserName(repository.getUserDetails());
         return urlStatsResponse;
     }
 
-	public StatisticEntity buildUrlStatistics(String user, String userdetails, UrlEntity url) {
+	public StatisticEntity buildUrlStatistics(String user, UrlEntity url) {
 
-		return new StatisticEntity(user, userdetails, url);
+		return new StatisticEntity(user,url);
 	}
 }

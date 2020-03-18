@@ -1,4 +1,4 @@
-package com.neueda.shortenedurl.dao;
+package com.neueda.shortenedurl.dao.statistic;
 
 import java.util.List;
 
@@ -19,6 +19,4 @@ public interface StatisticRepository extends JpaRepository<StatisticEntity, Long
     @Query("select new com.neueda.shortenedurl.model.Statistics(s.userName, count(s)) from StatisticEntity s group by s.userName")
     List<Statistics> getUserName();
 
-    @Query("select new com.neueda.shortenedurl.model.Statistics(s.userDetails, count(s)) from StatisticEntity s group by s.userDetails")
-    List<Statistics> getUserDetails();
 }

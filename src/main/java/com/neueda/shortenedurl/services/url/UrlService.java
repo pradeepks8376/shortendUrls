@@ -1,8 +1,8 @@
-package com.neueda.shortenedurl.services;
+package com.neueda.shortenedurl.services.url;
 
-import com.neueda.shortenedurl.dao.UrlRepository;
+import com.neueda.shortenedurl.dao.url.UrlRepository;
+import com.neueda.shortenedurl.exceptions.UrlNotFoundException;
 import com.neueda.shortenedurl.model.UrlEntity;
-import com.neueda.littleurl.services.exceptions.UrlNotFoundException;
 import com.neueda.shortenedurl.utils.Constants;
 import com.neueda.shortenedurl.utils.UrlUtils;
 import org.slf4j.Logger;

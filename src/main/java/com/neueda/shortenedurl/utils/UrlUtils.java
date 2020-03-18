@@ -1,5 +1,7 @@
 package com.neueda.shortenedurl.utils;
 
+import com.neueda.shortenedurl.exceptions.UrlShortnerHelperException;
+
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -36,7 +38,7 @@ public class UrlUtils {
 
 			return hash;
 		} catch (NoSuchAlgorithmException e) {
-			throw new com.neueda.shortenedurl.helpers.exceptions.UrlShortnerHelperException(Constants.MD5_ALGORITHM_IS_NOT_AVAILABLE, e);
+			throw new UrlShortnerHelperException(Constants.MD5_ALGORITHM_IS_NOT_AVAILABLE, e);
 		}
 	}
 

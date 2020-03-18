@@ -31,17 +31,7 @@ public class StatisticEntity implements Serializable {
 		this.userName = userName;
 	}
 
-	public String getUserDetails() {
-		return userDetails;
-	}
-
-	public void setUserDetails(String userDetails) {
-		this.userDetails = userDetails;
-	}
-
 	private String userName;
-
-	private String userDetails;
 
 	@CreationTimestamp
 	private Date createdAt;
@@ -54,10 +44,9 @@ public class StatisticEntity implements Serializable {
 	public StatisticEntity() {
 	}
 
-	public StatisticEntity(String userName, String userDetails, UrlEntity url) {
+	public StatisticEntity(String userName, UrlEntity url) {
 		super();
 		this.userName = userName;
-		this.userDetails = userDetails;
 		this.url = url;
 	}
 
@@ -113,7 +102,7 @@ public class StatisticEntity implements Serializable {
 
 	@Override
 	public String toString() {
-		return "Statistic [userName=" + userName + ", userDetails=" + userDetails + ", createdAt=" + createdAt + ", url=" + url + "]";
+		return "Statistic [userName=" + userName + ", createdAt=" + createdAt + ", url=" + url + "]";
 	}	
 
 }
